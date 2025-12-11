@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import GridLayout, { WidthProvider } from "react-grid-layout"
+import GridLayout from "react-grid-layout"
 import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 import { Card } from "@/components/ui/card"
@@ -9,8 +9,6 @@ import type { Dashboard } from "@/types/dashboard"
 import type { Monitor, Agent } from "@/types/monitor"
 import { loadMonitors, loadAgents } from "@/lib/storage"
 import { WidgetPreview } from "./WidgetPreview"
-
-const ReactGridLayout = WidthProvider(GridLayout)
 
 interface LayoutItem {
   i: string
@@ -59,7 +57,7 @@ export function DashboardViewV2({ dashboard, tvMode = false }: Props) {
           <p>Este painel não possui widgets</p>
         </div>
       ) : (
-        <ReactGridLayout
+        <GridLayout
           className="layout"
           layout={layout as any}
           cols={cols}
@@ -85,7 +83,7 @@ export function DashboardViewV2({ dashboard, tvMode = false }: Props) {
               </Card>
             </div>
           ))}
-        </ReactGridLayout>
+        </GridLayout>
       )}
     </div>
   )

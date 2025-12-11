@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import GridLayout, { WidthProvider } from "react-grid-layout"
+import GridLayout from "react-grid-layout"
 import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 import { Card } from "@/components/ui/card"
@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button"
 import type { DashboardWidget, MonitorGroup } from "@/types/dashboard"
 import type { Monitor } from "@/types/monitor"
 import { WidgetPreview } from "./WidgetPreview"
-
-const ReactGridLayout = WidthProvider(GridLayout)
 
 interface LayoutItem {
   i: string
@@ -82,7 +80,7 @@ export function DashboardCanvas({
           <p>Arraste widgets da paleta para começar</p>
         </div>
       ) : (
-        <ReactGridLayout
+        <GridLayout
           className="layout"
           layout={layout as any}
           cols={columns}
@@ -116,7 +114,7 @@ export function DashboardCanvas({
               </Card>
             </div>
           ))}
-        </ReactGridLayout>
+        </GridLayout>
       )}
     </div>
   )

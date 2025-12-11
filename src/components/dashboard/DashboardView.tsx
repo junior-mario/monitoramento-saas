@@ -8,6 +8,7 @@ import { loadMonitors, loadAgents } from "@/lib/storage"
 import { StatsSummaryWidget } from "@/components/dashboard/widgets/StatsSummaryWidget"
 import { MonitorsStatusWidget } from "@/components/dashboard/widgets/MonitorsStatusWidget"
 import { AgentsStatusWidget } from "@/components/dashboard/widgets/AgentsStatusWidget"
+import { WidgetPreview } from "./WidgetPreview"
 
 interface Props {
   dashboard: Dashboard
@@ -28,26 +29,30 @@ export function DashboardView({ dashboard, tvMode = false }: Props) {
     return () => clearInterval(interval)
   }, [dashboard.autoRefreshSec])
 
-  function colClass(size: 12 | 6 | 4) {
-    if (size === 12) return "col-span-12"
-    if (size === 6) return "col-span-12 lg:col-span-6"
+  function colClass(w: number) {
+    if (w >= 12) return "col-span-12"
+    if (w >= 6) return "col-span-12 lg:col-span-6"
     return "col-span-12 lg:col-span-4"
   }
 
   return (
     <div className={`p-4 ${tvMode ? "md:p-6 lg:p-8" : ""}`}>
       <div className={`grid gap-4 grid-cols-12`}>
-        {dashboard.widgets.map((w) => (
-          <Card key={w.id} className={`${colClass(w.size)} ${tvMode ? "p-4 lg:p-6" : "p-4"}`}>
-            {w.title && <div className={`mb-2 ${tvMode ? "text-xl lg:text-2xl font-semibold" : "text-sm font-medium text-muted-foreground"}`}>{w.title}</div>}
-            {w.type === "stats-summary" && (
+        {dashboard.widgets.map((widget) => (
+          <Card key={widget.id} className={`${colClass(widget.layout.w)} ${tvMode ? "p-4 lg:p-6" : "p-4"}`}>
+            {widget.title && (
+              <div className={`mb-2 ${tvMode ? "text-xl lg:text-2xl font-semibold" : "text-sm font-medium text-muted-foreground"}`}>
+                {widget.title}
+              </div>
+            )}
+            {widget.type === "stats" && (
               <StatsSummaryWidget monitors={monitors} agents={agents} tvMode={tvMode} />
             )}
-            {w.type === "monitors-status" && (
+            {widget.type === "status" && (
               <MonitorsStatusWidget monitors={monitors} tvMode={tvMode} />
             )}
-            {w.type === "agents-status" && (
-              <AgentsStatusWidget agents={agents} tvMode={tvMode} />
+            {(widget.type === "chart" || widget.type === "group-status") && (
+              <WidgetPreview widget={widget} monitors={monitors} groups={dashboard.groups} />
             )}
           </Card>
         ))}

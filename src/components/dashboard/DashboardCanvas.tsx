@@ -96,7 +96,7 @@ export function DashboardCanvas({
               key={widget.id}
               className={`group ${selectedWidgetId === widget.id ? "ring-2 ring-primary" : ""}`}
             >
-              <Card className="h-full overflow-hidden">
+              <Card className="w-full h-full overflow-hidden">
                 <div className="drag-handle flex items-center justify-between px-3 py-2 bg-muted/50 cursor-move border-b">
                   <span className="text-sm font-medium truncate">{widget.title}</span>
                   <Button
@@ -108,7 +108,7 @@ export function DashboardCanvas({
                     <Settings2 className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="p-3 h-[calc(100%-40px)] overflow-auto">
+                <div className="p-3 h-[calc(100%-40px)] w-full overflow-auto">
                   <WidgetPreview widget={widget} monitors={monitors} groups={groups} />
                 </div>
               </Card>

@@ -1,14 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { ArrowLeft, Save, Eye } from "lucide-react"
+import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Sheet, SheetContent } from "@/components/ui/sheet"
@@ -16,29 +14,44 @@ import { DashboardCanvas } from "@/components/dashboard/DashboardCanvas"
 import { WidgetPalette } from "@/components/dashboard/WidgetPalette"
 import { WidgetEditor } from "@/components/dashboard/WidgetEditor"
 import { GroupManager } from "@/components/dashboard/GroupManager"
-import { upsertDashboard, createWidget } from "@/lib/dashboards"
-import { loadMonitors, generateId } from "@/lib/storage"
+import { getDashboard, upsertDashboard, createWidget } from "@/lib/dashboards"
+import { loadMonitors } from "@/lib/storage"
 import type { Dashboard, DashboardWidget, MonitorGroup } from "@/types/dashboard"
 import type { Monitor } from "@/types/monitor"
 
-export default function NewDashboardBuilderPage() {
+export default function EditDashboardPage() {
+  const params = useParams()
   const router = useRouter()
-  const [name, setName] = React.useState("Novo Painel")
+  const id = params.id as string
+
+  const [name, setName] = React.useState("")
   const [widgets, setWidgets] = React.useState<DashboardWidget[]>([])
   const [groups, setGroups] = React.useState<MonitorGroup[]>([])
   const [monitors, setMonitors] = React.useState<Monitor[]>([])
   const [selectedWidgetId, setSelectedWidgetId] = React.useState<string | null>(null)
   const [editorOpen, setEditorOpen] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
+  const [originalDashboard, setOriginalDashboard] = React.useState<Dashboard | null>(null)
 
   React.useEffect(() => {
     setMonitors(loadMonitors())
-  }, [])
+    const d = getDashboard(id)
+    if (!d) {
+      toast.error("Painel não encontrado")
+      router.push("/dashboard/dashboards")
+      return
+    }
+    setOriginalDashboard(d)
+    setName(d.name)
+    setWidgets(d.widgets)
+    setGroups(d.groups)
+    setLoading(false)
+  }, [id, router])
 
   const selectedWidget = widgets.find((w) => w.id === selectedWidgetId)
 
   function addWidget(type: DashboardWidget["type"], chartType?: DashboardWidget["chartType"]) {
     const widget = createWidget(type, chartType)
-    // Find next available Y position
     const maxY = widgets.reduce((max, w) => Math.max(max, w.layout.y + w.layout.h), 0)
     widget.layout.y = maxY
     setWidgets([...widgets, widget])
@@ -52,15 +65,15 @@ export default function NewDashboardBuilderPage() {
     toast.success("Widget atualizado")
   }
 
-  function deleteWidget(id: string) {
-    setWidgets(widgets.filter((w) => w.id !== id))
+  function deleteWidget(widgetId: string) {
+    setWidgets(widgets.filter((w) => w.id !== widgetId))
     setSelectedWidgetId(null)
     setEditorOpen(false)
     toast.success("Widget removido")
   }
 
-  function selectWidget(id: string) {
-    setSelectedWidgetId(id)
+  function selectWidget(widgetId: string) {
+    setSelectedWidgetId(widgetId)
     setEditorOpen(true)
   }
 
@@ -69,32 +82,32 @@ export default function NewDashboardBuilderPage() {
       toast.error("Digite um nome para o painel")
       return
     }
-    if (widgets.length === 0) {
-      toast.error("Adicione pelo menos um widget")
-      return
-    }
+    if (!originalDashboard) return
 
     const dashboard: Dashboard = {
-      id: generateId(),
+      ...originalDashboard,
       name,
-      createdAt: new Date().toISOString(),
       widgets,
       groups,
-      autoRefreshSec: 30,
-      columns: 12,
-      rowHeight: 80,
     }
     upsertDashboard(dashboard)
-    toast.success("Painel criado com sucesso!")
-    router.push(`/dashboard/dashboards/${dashboard.id}`)
+    toast.success("Painel salvo!")
+    router.push(`/dashboard/dashboards/${id}`)
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <p className="text-muted-foreground">Carregando...</p>
+      </div>
+    )
   }
 
   return (
     <div className="h-[calc(100vh-56px)] flex flex-col">
-      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b bg-background">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/dashboards">
+          <Link href={`/dashboard/dashboards/${id}`}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -112,19 +125,17 @@ export default function NewDashboardBuilderPage() {
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.push("/dashboard/dashboards")}>
-            Cancelar
-          </Button>
+          <Link href={`/dashboard/dashboards/${id}`}>
+            <Button variant="outline">Cancelar</Button>
+          </Link>
           <Button onClick={saveDashboard}>
             <Save className="h-4 w-4 mr-2" />
-            Salvar Painel
+            Salvar Alterações
           </Button>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Palette */}
         <div className="w-[280px] border-r bg-background overflow-hidden flex flex-col">
           <Tabs defaultValue="widgets" className="flex-1 flex flex-col">
             <TabsList className="w-full rounded-none border-b">
@@ -142,7 +153,6 @@ export default function NewDashboardBuilderPage() {
           </Tabs>
         </div>
 
-        {/* Canvas */}
         <div className="flex-1 overflow-auto p-4 bg-muted/20">
           <DashboardCanvas
             widgets={widgets}
@@ -154,7 +164,6 @@ export default function NewDashboardBuilderPage() {
           />
         </div>
 
-        {/* Right Sidebar - Widget Editor */}
         <Sheet open={editorOpen} onOpenChange={setEditorOpen}>
           <SheetContent className="w-[350px] p-0">
             {selectedWidget && (

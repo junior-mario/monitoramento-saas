@@ -4,7 +4,7 @@ import * as React from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { createDefaultDashboard, getDashboard, upsertDashboard } from "@/lib/dashboards"
-import { DashboardView } from "../../../components/dashboard/DashboardView"
+import { DashboardViewV2 } from "@/components/dashboard/DashboardViewV2"
 
 export default function TVDashboardPage() {
   const [ready, setReady] = React.useState(false)
@@ -31,15 +31,21 @@ export default function TVDashboardPage() {
   }
 
   if (!ready) {
-    return <div className="p-6"><p className="text-muted-foreground">Carregando...</p></div>
+    return (
+      <div className="p-6">
+        <p className="text-muted-foreground">Carregando...</p>
+      </div>
+    )
   }
 
   return (
     <div className="p-2 md:p-4">
-      <div className="flex justify-end">
-        <Button variant="outline" onClick={fullscreen}>Tela cheia</Button>
+      <div className="flex justify-end mb-2">
+        <Button variant="outline" onClick={fullscreen}>
+          Tela cheia
+        </Button>
       </div>
-      <DashboardView dashboard={dashboard} tvMode />
+      <DashboardViewV2 dashboard={dashboard} tvMode />
     </div>
   )
 }

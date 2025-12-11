@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import RGL, { WidthProvider } from "react-grid-layout"
+import GridLayout, { WidthProvider } from "react-grid-layout"
 import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 import { Card } from "@/components/ui/card"
@@ -10,7 +10,7 @@ import type { Monitor, Agent } from "@/types/monitor"
 import { loadMonitors, loadAgents } from "@/lib/storage"
 import { WidgetPreview } from "./WidgetPreview"
 
-const ReactGridLayout = WidthProvider(RGL)
+const ReactGridLayout = WidthProvider(GridLayout)
 
 interface LayoutItem {
   i: string
@@ -61,7 +61,7 @@ export function DashboardViewV2({ dashboard, tvMode = false }: Props) {
       ) : (
         <ReactGridLayout
           className="layout"
-          layout={layout as RGL.Layout[]}
+          layout={layout as any}
           cols={cols}
           rowHeight={rowHeight}
           isDraggable={false}

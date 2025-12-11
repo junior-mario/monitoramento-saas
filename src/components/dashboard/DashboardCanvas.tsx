@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import RGL, { WidthProvider } from "react-grid-layout"
+import GridLayout, { WidthProvider } from "react-grid-layout"
 import "react-grid-layout/css/styles.css"
 import "react-resizable/css/styles.css"
 import { Card } from "@/components/ui/card"
@@ -11,7 +11,7 @@ import type { DashboardWidget, MonitorGroup } from "@/types/dashboard"
 import type { Monitor } from "@/types/monitor"
 import { WidgetPreview } from "./WidgetPreview"
 
-const ReactGridLayout = WidthProvider(RGL)
+const ReactGridLayout = WidthProvider(GridLayout)
 
 interface LayoutItem {
   i: string
@@ -84,10 +84,10 @@ export function DashboardCanvas({
       ) : (
         <ReactGridLayout
           className="layout"
-          layout={layout as RGL.Layout[]}
+          layout={layout as any}
           cols={columns}
           rowHeight={rowHeight}
-          onLayoutChange={(currentLayout: RGL.Layout[]) => handleLayoutChange(currentLayout as LayoutItem[])}
+          onLayoutChange={(currentLayout: any) => handleLayoutChange(currentLayout as any)}
           draggableHandle=".drag-handle"
           isResizable
           isDraggable

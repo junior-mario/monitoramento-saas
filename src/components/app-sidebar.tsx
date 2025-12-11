@@ -38,7 +38,9 @@ export function AppSidebar() {
       <SidebarHeader className="border-b px-4 py-3">
         <Link href="/dashboard" className="flex items-center gap-2">
           <Activity className="h-6 w-6 text-primary" />
-          <span className="font-semibold text-lg">UptimeWatch</span>
+          <span className="font-semibold text-lg bg-gradient-to-r from-blue-600 via-violet-600 to-emerald-600 bg-clip-text text-transparent">
+            UptimeWatch
+          </span>
         </Link>
       </SidebarHeader>
       <SidebarContent>

@@ -8,6 +8,8 @@ import {
   FileText,
   Settings,
   Activity,
+  Tv,
+  LayoutGrid,
 } from "lucide-react"
 import {
   Sidebar,
@@ -27,6 +29,8 @@ const navItems = [
   { title: "Monitores", href: "/dashboard/monitors", icon: Activity },
   { title: "Agentes", href: "/dashboard/agents", icon: Server },
   { title: "Relatórios", href: "/dashboard/reports", icon: FileText },
+  { title: "Painéis", href: "/dashboard/dashboards", icon: LayoutGrid },
+  { title: "Modo TV", href: "/dashboard/tv", icon: Tv },
   { title: "Configurações", href: "/dashboard/settings", icon: Settings },
 ]
 

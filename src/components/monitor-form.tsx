@@ -16,7 +16,7 @@ const schema = z.object({
   name: z.string().min(2, "Nome muito curto"),
   type: z.enum(["http", "ping"]),
   target: z.string().min(3, "Alvo inválido"),
-  interval: z.coerce.number().min(30, "Intervalo mínimo: 30s").default(300),
+  interval: z.coerce.number().min(30, "Intervalo mínimo: 30s"),
 })
 
 type Values = z.infer<typeof schema>
@@ -45,6 +45,7 @@ export function MonitorForm({ onCreate }: Props) {
       target: values.target,
       interval: values.interval,
       status: "unknown",
+      createdAt: new Date().toISOString(),
     }
     onCreate(monitor)
     toast.success("Monitor criado")

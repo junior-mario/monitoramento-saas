@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import type { Monitor } from "@/types/monitor"
+import type { Monitor, MonitorStatus } from "@/types/monitor"
 import { Card } from "@/components/ui/card"
 
 interface Props {
@@ -12,12 +12,14 @@ interface Props {
   onRemove: (id: string) => void
 }
 
-function StatusBadge({ status }: { status: Monitor["status"] }) {
-  const variants = {
-    up: "bg-green-600 text-white",
-    down: "bg-red-600 text-white",
-    unknown: "bg-gray-300 text-gray-800",
-  } as const
+const variants: Record<MonitorStatus, string> = {
+  up: "bg-green-600 text-white",
+  down: "bg-red-600 text-white",
+  degraded: "bg-yellow-600 text-white",
+  unknown: "bg-gray-300 text-gray-800",
+}
+
+function StatusBadge({ status }: { status: MonitorStatus }) {
   return <Badge className={variants[status]}>{status}</Badge>
 }
 
